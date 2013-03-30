@@ -1,7 +1,5 @@
 # Tower Server Router
 
-[![Build Status](https://secure.travis-ci.org/viatropos/tower-server-router.png)](http://travis-ci.org/viatropos/tower-server-router)
-
 ## Installation
 
 ```
