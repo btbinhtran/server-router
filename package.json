@@ -2,5 +2,10 @@
   "name": "tower-router",
   "version": "0.0.1",
   "main": "./index.js",
-  "author": "Lance Pollard <lancejpollard@gmail.com>"
+  "author": "Lance Pollard <lancejpollard@gmail.com>",
+  "dependencies": {
+    "tower-container": "*",
+    "tower-route": "*",
+    "tower-context": "*"
+  }
 }
