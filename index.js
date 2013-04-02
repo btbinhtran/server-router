@@ -3,7 +3,8 @@
  * Module dependencies.
  */
 
-var route = require('tower-route');
+var route = require('tower-route')
+  , Context = require('tower-context');
 
 route.on('define', function(i){
   callbacks.push(function(context, next){
@@ -14,8 +15,13 @@ route.on('define', function(i){
 var callbacks = [];
 
 module.exports = router;
+module.exports.route = route;
 
+// XXX: this isn't the api, just hacking
 function router(context, fn) {
+  if ('string' == typeof context)
+    context = new Context(context);
+
   var i = -1;
 
   function next() {
@@ -24,7 +30,15 @@ function router(context, fn) {
     if (!callbacks[i])
       return fn();
 
-    callbacks[i](context, next);
+    if (2 == callbacks[i].length) {
+      callbacks[i](context, function(err){
+        if (err) return fn(err);
+        next();
+      });
+    } else {
+      callbacks[i](context);
+      next();
+    }
   }
 
   next();
