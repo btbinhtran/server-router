@@ -208,6 +208,19 @@ describe('router', function(){
       });
   });
 
+  //it('should render view', function(done){
+  //  route('/')
+  //    .on('request', function(context){
+  //      context.res.render('hello-world.handlebars');
+  //    });
+  //
+  //  agent
+  //    .get('http://localhost:4000')
+  //    .end(function(res){
+  //      done();
+  //    });
+  //});
+
   // https://github.com/LearnBoost/engine.io/blob/master/test/engine.io.js
   // http://faye.jcoglan.com/browser.html
   // https://github.com/sockjs/sockjs-node/blob/master/examples/echo/server.js
