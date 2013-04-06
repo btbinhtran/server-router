@@ -205,8 +205,11 @@ describe('router', function(){
       .on('disconnect', function(context){
         calls.push('users.disconnect');
       })
+      .on('data', function(data){
+        // maybe this is where sockets stream raw data.
+      })
       .on('someEvent', function(data){
-        
+
       })
 
     route('/posts')
