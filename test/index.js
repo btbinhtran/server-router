@@ -66,7 +66,7 @@ echo.on('connection', function(conn){
             , event: 'disconnect'
             , headers: conn.headers
           }));
-          
+
           break;
       }
     } else {
@@ -175,4 +175,38 @@ describe('router', function(){
     sock.write('header,Accept:application/json')
     sock.write('route,/');
   })
+
+  it('should connect to multiple routes', function(done){
+    var calls = [];
+
+    route('/users')
+      .on('connect', function(context){
+        calls.push('users.connect');
+      })
+      .on('disconnect', function(context){
+        calls.push('users.disconnect');
+      });
+
+    route('/posts')
+      .on('connect', function(context){
+        calls.push('posts.connect');
+      })
+      .on('disconnect', function(context){
+        calls.push('posts.disconnect');
+
+        assert('users.connect' === calls[0]);
+        assert('posts.connect' === calls[1]);
+        assert('users.disconnect' === calls[2]);
+        assert('posts.disconnect' === calls[3]);
+
+        done();
+      });
+
+    // this is what happens client side
+    var sock = SockJS.create('http://localhost:4000/echo');
+    sock.write('connect,/users');
+    sock.write('connect,/posts');
+    sock.write('disconnect,/users');
+    sock.write('disconnect,/posts');
+  });
 });
