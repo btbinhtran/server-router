@@ -25,32 +25,42 @@ var SockJS = require('sockjs-client');
 
 echo.on('connection', function(conn){
   var routes = route.routes;
+  conn.routes = {};
+  conn.headers = {};
   conn.on('data', function(message){
     var parts = message.split(',');
 
     if (parts.length > 1) {
       var key = parts.shift()
-        , val = parts.shift();
+        //, val = parts.shift();
 
-      message = parts.join(',');
+      var val = parts.join(',');
 
       // XXX: this is hardcoded right now
-      conn[key] = val;
+      if ('route' == key) {
+        conn.routes[val] = true;
 
-      router.dispatch(new Context({
-          connection: conn
-        , path: val
-        , event: 'connect'
-      }));
+        router.dispatch(new Context({
+            connection: conn
+          , path: val
+          , event: 'connect'
+          , headers: conn.headers
+        })); 
+      } else if ('header' == key) {
+        parts = val.split(/ *: */);
+        key = parts.shift();
+        val = parts.join(':');
+        conn.headers[key] = val;
+      }
     } else {
-      conn.write(message);
+      //conn.write(message);
     }
   });
   conn.on('close', function(){
-    if (conn.route) {
+    for (var key in conn.routes) {
       router.dispatch(new Context({
           connection: conn
-        , path: conn.route
+        , path: key
         , event: 'disconnect'
       }));
     }
@@ -105,6 +115,7 @@ describe('router', function(){
     route('/')
       .on('connect', function(context){
         calls.push('route.connect');
+        assert('application/json' === context.headers['Accept']);
         context.connection.write('route == /');
       })
       .on('disconnect', function(context){
@@ -142,6 +153,7 @@ describe('router', function(){
     // connect/disconnect to routes on the fly.
     // or `+/`, and `-/`, and just `/` for single request.
     // or `POST /` and other similar to HTTP methods.
+    sock.write('header,Accept:application/json')
     sock.write('route,/');
   })
 });
