@@ -137,6 +137,9 @@ describe('router', function(){
       calls.push('close');
     });
 
+    // or maybe `connect,/`, so you can do `disconnect,/`
+    // on focusin/out. This way the client-side could
+    // connect/disconnect to routes on the fly.
     sock.write('route,/');
   })
 });
