@@ -43,14 +43,18 @@ describe('router', function(){
     var calls = 0;
 
     route('/', 'index')
-      .on('request', function(context){
+      .on('request', function(context, next){
         var res = context.res;
 
         // simulate async
         process.nextTick(function(){
-          res.json({ hello: 'world' });
+          context.data = { hello: 'world' };
           calls++;
+          next();
         });
+      })
+      .render('*', function(context){
+        context.res.json(context.data);
       });
 
     agent
@@ -69,6 +73,7 @@ describe('router', function(){
   it('should get socket connection', function(done){
     var sock = SockJS.create('http://localhost:4000/echo');
     var calls = [];
+
     sock.on('connection', function(){
       calls.push('connection');
     });
@@ -78,7 +83,7 @@ describe('router', function(){
       assert('Hello World' === data);
       sock.close();
     });
-    
+
     sock.on('close', function(){
       calls.push('close');
 
