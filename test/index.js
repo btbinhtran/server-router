@@ -67,7 +67,7 @@ echo.on('connection', function(conn){
 
           break;
         case 'DATA':
-          
+
           break;
         case 'header':
           parts = val.split(/ *: */);
@@ -193,8 +193,10 @@ describe('router', function(){
     // or `POST /` and other similar to HTTP methods.
     sock.write('header,Accept:application/json')
     sock.write('route,/');
-  })
-
+  });
+  
+  // http://stackoverflow.com/questions/2558606/stream-data-with-node-js
+  // http://cjihrig.com/blog/creating-your-own-node-js-websocket-echo-server/
   it('should connect to multiple routes', function(done){
     var calls = [];
 
@@ -204,13 +206,16 @@ describe('router', function(){
       })
       .on('request', function(context){
         calls.push('users.request.' + context.method);
+        // context.pipe(graph.where()...)
       })
       .on('disconnect', function(context){
         calls.push('users.disconnect');
       })
       .on('data', function(data){
         // maybe this is where sockets stream raw data.
-      });
+      })
+      // maybe this instead of disconnect, or `close`.
+      //.on('end');
 
     route('/posts')
       .on('connect', function(context){

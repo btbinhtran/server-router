@@ -67,3 +67,24 @@ Context.prototype.render = function(){
   this.res.render.apply(this.res, arguments);
   return this;
 }
+
+Context.prototype.write = function(string){
+  if (this.tcp) {
+    this.connection.write([this.event, this.path, string].join(','));
+  } else {
+    this.res.write(string);
+  }
+}
+
+/**
+ * Example
+ *
+ *    context.error(404);
+ *    context.emit(404);
+ */
+
+Contxt.prototype.error = function(code, message){
+  // XXX: maybe there is a default handler?
+  this.res.send(code, message);
+  this.emit(code, message);
+}
