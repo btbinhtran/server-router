@@ -102,7 +102,7 @@ describe('router', function(){
     var calls = [];
 
     // this is what happens server side
-    route('/', 'index')
+    route('/')
       .on('connect', function(context){
         calls.push('route.connect');
         context.connection.write('route == /');
