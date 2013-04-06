@@ -81,7 +81,7 @@ Context.prototype.render = function(){
   } else {
     var err = new Error('Not Acceptable');
     err.status = 406;
-    err.types = normalizeTypes(keys);
+    // err.types = normalizeTypes(keys);
     next(err);
   }
 

@@ -130,7 +130,7 @@ describe('router', function(){
 
     agent
       .get('http://localhost:4000')
-      .type('json')
+      .set('Accept', 'application/json')
       .end(function(res){
         assert('{"hello":"world"}' == JSON.stringify(res.body));
         assert(1 === calls);
@@ -147,9 +147,12 @@ describe('router', function(){
         context.res.json({ hello: 'world' });
       })
       .format('html', function(context){
-        context.res.set('Content-Type', 'text/html');
         context.res.send('<h1>Hello World</h1>');
-      });
+      })
+      .format('csv', function(context){
+        context.res.send('hello,world');
+      })
+      // http://stackoverflow.com/questions/393647/response-content-type-as-csv
 
     var responses = 0;
 
@@ -168,6 +171,15 @@ describe('router', function(){
         responses++;
         assert('<h1>Hello World</h1>' == res.text);
         assert(2 === responses);
+      });
+
+    agent
+      .get('http://localhost:4000')
+      .set('Accept', 'text/csv')
+      .end(function(res){
+        responses++;
+        assert('hello,world' == res.text);
+        assert(3 === responses);
         done();
       });
   });
