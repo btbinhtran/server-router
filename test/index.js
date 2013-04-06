@@ -204,7 +204,10 @@ describe('router', function(){
       })
       .on('disconnect', function(context){
         calls.push('users.disconnect');
-      });
+      })
+      .on('someEvent', function(data){
+        
+      })
 
     route('/posts')
       .on('connect', function(context){
@@ -229,5 +232,6 @@ describe('router', function(){
     sock.write('GET,/users?since=2013');
     sock.write('DISCONNECT,/users');
     sock.write('DISCONNECT,/posts');
+    sock.write('EVENT,someEvent,/users');
   });
 });
