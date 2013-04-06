@@ -140,6 +140,8 @@ describe('router', function(){
     // or maybe `connect,/`, so you can do `disconnect,/`
     // on focusin/out. This way the client-side could
     // connect/disconnect to routes on the fly.
+    // or `+/`, and `-/`, and just `/` for single request.
+    // or `POST /` and other similar to HTTP methods.
     sock.write('route,/');
   })
 });
