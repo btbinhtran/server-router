@@ -39,7 +39,7 @@ echo.on('connection', function(conn){
       // XXX: this is hardcoded right now
       switch (key) {
         case 'route':
-        case 'connect':
+        case 'CONNECT':
           conn.routes[val] = true;
 
           router.dispatch(new Context({
@@ -50,6 +50,22 @@ echo.on('connection', function(conn){
           })); 
 
           break;
+        case 'GET':
+        case 'POST':
+        case 'PUT':
+        case 'DELETE':
+        case 'HEAD':
+        case 'OPTIONS':
+        case 'PATCH':
+          router.dispatch(new Context({
+              connection: conn
+            , path: val
+            , event: 'request'
+            , method: key
+            , headers: conn.headers
+          }));
+
+          break;
         case 'header':
           parts = val.split(/ *: */);
           key = parts.shift();
@@ -57,7 +73,7 @@ echo.on('connection', function(conn){
           conn.headers[key] = val;
 
           break;
-        case 'disconnect':
+        case 'DISCONNECT':
           delete conn.routes[val];
 
           router.dispatch(new Context({
@@ -183,6 +199,9 @@ describe('router', function(){
       .on('connect', function(context){
         calls.push('users.connect');
       })
+      .on('request', function(context){
+        calls.push('users.request.' + context.method);
+      })
       .on('disconnect', function(context){
         calls.push('users.disconnect');
       });
@@ -196,17 +215,19 @@ describe('router', function(){
 
         assert('users.connect' === calls[0]);
         assert('posts.connect' === calls[1]);
-        assert('users.disconnect' === calls[2]);
-        assert('posts.disconnect' === calls[3]);
+        assert('users.request.GET' === calls[2]);
+        assert('users.disconnect' === calls[3]);
+        assert('posts.disconnect' === calls[4]);
 
         done();
       });
 
     // this is what happens client side
     var sock = SockJS.create('http://localhost:4000/echo');
-    sock.write('connect,/users');
-    sock.write('connect,/posts');
-    sock.write('disconnect,/users');
-    sock.write('disconnect,/posts');
+    sock.write('CONNECT,/users');
+    sock.write('CONNECT,/posts');
+    sock.write('GET,/users?since=2013');
+    sock.write('DISCONNECT,/users');
+    sock.write('DISCONNECT,/posts');
   });
 });
