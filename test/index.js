@@ -99,6 +99,9 @@ describe('router', function(){
   // https://github.com/nodejitsu/node-http-proxy#proxying-websockets
   // https://github.com/sockjs/sockjs-node/issues/67
   it('should get socket connection', function(done){
+    var calls = [];
+
+    // this is what happens server side
     route('/', 'index')
       .on('connect', function(context){
         calls.push('route.connect');
@@ -116,8 +119,8 @@ describe('router', function(){
         done();
       });
 
+    // this is what happens client side
     var sock = SockJS.create('http://localhost:4000/echo');
-    var calls = [];
 
     sock.on('connection', function(){
       // this gets called after the server .on('connection') gets called.
