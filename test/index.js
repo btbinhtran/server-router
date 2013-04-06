@@ -152,7 +152,12 @@ describe('router', function(){
       .format('csv', function(context){
         context.res.send('hello,world');
       })
+      .format('pdf', function(context){
+        // application/pdf
+      })
+      // application/vnd.ms-excel
       // http://stackoverflow.com/questions/393647/response-content-type-as-csv
+      // http://stackoverflow.com/questions/312230/proper-mime-media-type-for-pdf-files
 
     var responses = 0;
 
@@ -180,6 +185,25 @@ describe('router', function(){
         responses++;
         assert('hello,world' == res.text);
         assert(3 === responses);
+        done();
+      });
+  });
+
+  it('should handle errors', function(done){
+    route('/')
+      .on('request', function(context){
+        throw new Error('An Error!');
+      })
+      .on(500, function(context){
+        assert('An Error!' === context.error.message);
+        context.res.send(500, 'Oops');
+      });
+
+    agent
+      .get('http://localhost:4000')
+      .end(function(res){
+        assert(500 === res.status);
+        assert('Oops' === res.text);
         done();
       });
   });
