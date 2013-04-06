@@ -66,6 +66,9 @@ echo.on('connection', function(conn){
           }));
 
           break;
+        case 'DATA':
+          
+          break;
         case 'header':
           parts = val.split(/ *: */);
           key = parts.shift();
@@ -207,10 +210,7 @@ describe('router', function(){
       })
       .on('data', function(data){
         // maybe this is where sockets stream raw data.
-      })
-      .on('someEvent', function(data){
-
-      })
+      });
 
     route('/posts')
       .on('connect', function(context){
@@ -235,6 +235,7 @@ describe('router', function(){
     sock.write('GET,/users?since=2013');
     sock.write('DISCONNECT,/users');
     sock.write('DISCONNECT,/posts');
-    sock.write('EVENT,someEvent,/users');
+    //sock.write('EVENT,someEvent,/users');
+    sock.write('DATA,/users,random data');
   });
 });
