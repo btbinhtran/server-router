@@ -4,8 +4,11 @@
  */
 
 var route = require('tower-route')
-  , Context = require('tower-context');
+  , Context = require('tower-context')
+  , series = require('./async-series');
 
+// https://github.com/MatthewMueller/aemitter
+// https://github.com/visionmedia/batch
 route.on('define', function(i){
   callbacks.push(function(context, next){
     i.handle(context, next);
@@ -16,30 +19,42 @@ var callbacks = [];
 
 module.exports = router;
 module.exports.route = route;
+module.exports.callbacks = callbacks;
+module.exports.clear = function(){
+  callbacks.length = 0;
+  return router;
+}
 
 // XXX: this isn't the api, just hacking
 function router(context, fn) {
   if ('string' == typeof context)
     context = new Context(context);
 
-  var i = -1;
+  series(callbacks, context, fn);
+}
 
-  function next() {
-    i++;
+/**
+ * Listen to port.
+ */
 
-    if (!callbacks[i])
-      return fn();
+router.start = function(port, fn){
+  
+}
 
-    if (2 == callbacks[i].length) {
-      callbacks[i](context, function(err){
-        if (err) return fn(err);
-        next();
-      });
-    } else {
-      callbacks[i](context);
-      next();
-    }
-  }
+/**
+ * Stop listening to port.
+ */
 
-  next();
+router.stop = function(fn){
+  
+}
+
+Context.prototype.init = function(options){
+  this.req = options.req;
+  this.res = options.res;
+}
+
+Context.prototype.render = function(){
+  this.res.render.apply(this.res, arguments);
+  return this;
 }

@@ -18,6 +18,11 @@ var router = require('tower-router');
 mocha
 ```
 
+## Notes
+
+- http://mcavage.github.io/node-restify/
+- http://en.wikipedia.org/wiki/DTrace
+
 ## License
 
 MIT
