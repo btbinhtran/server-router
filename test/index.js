@@ -126,7 +126,7 @@ describe('router', function(){
       .format('json', function(context){
         context.res.json({ hello: 'world' });
         calls++;
-      })
+      });
 
     agent
       .get('http://localhost:4000')
@@ -134,6 +134,40 @@ describe('router', function(){
       .end(function(res){
         assert('{"hello":"world"}' == JSON.stringify(res.body));
         assert(1 === calls);
+        done();
+      });
+  });
+
+  it('should render different formats', function(done){
+    route('/')
+      .on('request', function(context){
+        context.render();
+      })
+      .format('json', function(context){
+        context.res.json({ hello: 'world' });
+      })
+      .format('html', function(context){
+        context.res.set('Content-Type', 'text/html');
+        context.res.send('<h1>Hello World</h1>');
+      });
+
+    var responses = 0;
+
+    agent
+      .get('http://localhost:4000')
+      .set('Accept', 'application/json')
+      .end(function(res){
+        responses++;
+        assert('{"hello":"world"}' == JSON.stringify(res.body));
+      });
+
+    agent
+      .get('http://localhost:4000')
+      .set('Accept', 'text/html')
+      .end(function(res){
+        responses++;
+        assert('<h1>Hello World</h1>' == res.text);
+        assert(2 === responses);
         done();
       });
   });
