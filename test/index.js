@@ -37,20 +37,37 @@ echo.on('connection', function(conn){
       var val = parts.join(',');
 
       // XXX: this is hardcoded right now
-      if ('route' == key) {
-        conn.routes[val] = true;
+      switch (key) {
+        case 'route':
+        case 'connect':
+          conn.routes[val] = true;
 
-        router.dispatch(new Context({
-            connection: conn
-          , path: val
-          , event: 'connect'
-          , headers: conn.headers
-        })); 
-      } else if ('header' == key) {
-        parts = val.split(/ *: */);
-        key = parts.shift();
-        val = parts.join(':');
-        conn.headers[key] = val;
+          router.dispatch(new Context({
+              connection: conn
+            , path: val
+            , event: 'connect'
+            , headers: conn.headers
+          })); 
+
+          break;
+        case 'header':
+          parts = val.split(/ *: */);
+          key = parts.shift();
+          val = parts.join(':');
+          conn.headers[key] = val;
+
+          break;
+        case 'disconnect':
+          delete conn.routes[val];
+
+          router.dispatch(new Context({
+              connection: conn
+            , path: val
+            , event: 'disconnect'
+            , headers: conn.headers
+          }));
+          
+          break;
       }
     } else {
       //conn.write(message);
@@ -62,8 +79,10 @@ echo.on('connection', function(conn){
           connection: conn
         , path: key
         , event: 'disconnect'
+        , headers: conn.headers
       }));
     }
+    delete conn.headers;
   });
 });
 
