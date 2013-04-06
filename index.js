@@ -22,16 +22,22 @@ module.exports.route = route;
 module.exports.callbacks = callbacks;
 module.exports.clear = function(){
   callbacks.length = 0;
+  route.routes.length = 0;
   return router;
 }
 
 // XXX: this isn't the api, just hacking
 function router(req, res, fn) {
-  series(callbacks, new Context({
+  router.dispatch(new Context({
       path: req.path
     , req: req
     , res: res
-  }), function(err){
+    , event: 'request'
+  }), fn);
+}
+
+router.dispatch = function(context, fn) {
+  series(callbacks, context, function(err){
     if (err) fn(err);
   });
 }

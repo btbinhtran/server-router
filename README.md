@@ -22,6 +22,12 @@ mocha
 
 - http://mcavage.github.io/node-restify/
 - http://en.wikipedia.org/wiki/DTrace
+- https://github.com/Frug/AJAX-Chat/issues/43
+- https://github.com/Worlize/WebSocket-Node
+- https://github.com/videlalvaro/gifsockets
+- https://github.com/sockjs
+- https://www.rabbitmq.com/blog/2012/02/23/how-to-compose-apps-using-websockets/
+- https://github.com/sockjs/websocket-multiplex
 
 ## License
 
