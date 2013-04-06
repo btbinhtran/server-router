@@ -26,11 +26,12 @@ module.exports.clear = function(){
 }
 
 // XXX: this isn't the api, just hacking
-function router(context, fn) {
-  if ('string' == typeof context)
-    context = new Context(context);
-
-  series(callbacks, context, fn);
+function router(req, res, fn) {
+  series(callbacks, new Context({
+      path: req.path
+    , req: req
+    , res: res
+  }), fn);
 }
 
 /**
@@ -38,7 +39,7 @@ function router(context, fn) {
  */
 
 router.start = function(port, fn){
-  
+
 }
 
 /**
@@ -46,7 +47,7 @@ router.start = function(port, fn){
  */
 
 router.stop = function(fn){
-  
+
 }
 
 Context.prototype.init = function(options){

@@ -9,6 +9,7 @@
     "tower-context": "*"
   },
   "devDependencies": {
-    "superagent": "*"
+    "superagent": "*",
+    "express": "~3.1.1"
   }
 }

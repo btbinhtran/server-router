@@ -3,38 +3,35 @@ var router = require('..')
   , Context = require('tower-context')
   , container = require('tower-container')
   , request = require('superagent')
+  , agent = request.agent()
   , assert = require('assert');
 
+var express = require('express')
+  , app = express();
+
+app.use(express.cookieParser());
+app.use(express.session({ secret: 'secret' }));
+app.use(router);
+
+app.listen(4000);
+
+// https://github.com/visionmedia/superagent/blob/master/test/node/agency.js
 describe('router', function(){
   before(router.clear);
 
-  it('should GET /', function(done){
-    route('/', 'index')
-      .use(function(context, next){
-        context.called = true;
-        next();
-      })
-
-    var context = new Context('/', container);
-
-    router(context, function(){
-      assert(context.called);
-      done();
-    });
-  });
-
   it('should GET JSON', function(done){
+    var calls = 0;
+
     route('/', 'index')
       .action('request', function(context){
-        context.called = true;
-        context.render('adsf')
+        calls++;
+      });
+
+    agent
+      .get('http://localhost:4000')
+      .end(function(res){
+        assert(1 === calls);
+        done();
       })
-
-    var context = new Context('/', container);
-
-    router(context, function(){
-      assert(context.called);
-      done();
-    });
   });
 });
