@@ -118,17 +118,19 @@ describe('router', function(){
 
     route('/', 'index')
       .on('request', function(context){
-        var res = context.res;
-
         // simulate async
         process.nextTick(function(){
-          res.json({ hello: 'world' });
-          calls++;
+          context.render();
         });
-      });
+      })
+      .format('json', function(context){
+        context.res.json({ hello: 'world' });
+        calls++;
+      })
 
     agent
       .get('http://localhost:4000')
+      .type('json')
       .end(function(res){
         assert('{"hello":"world"}' == JSON.stringify(res.body));
         assert(1 === calls);
@@ -235,6 +237,7 @@ describe('router', function(){
 
     // this is what happens client side
     var sock = SockJS.create('http://localhost:4000/echo');
+    // this is what the RESTAdapter would do (returning a stream object)
     sock.write('CONNECT,/users');
     sock.write('CONNECT,/posts');
     sock.write('GET,/users?since=2013');
