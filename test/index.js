@@ -24,7 +24,16 @@ var SockJS = require('sockjs-client');
 
 echo.on('connection', function(conn){
   conn.on('data', function(message){
-    conn.write(message);
+    // do we really have to implement some protocol?
+    if (':' == message.charAt(0) && message.toString().match(/^:(\w+): *(.+)/)) {
+      var key = RegExp.$1
+        , val = RegExp.$2;
+
+      conn[key] = val;
+      conn.write(key + ' == ' + val);
+    } else {
+      conn.write('Hello World');
+    }
   });
   conn.on('close', function(){
     //console.log('close');
@@ -43,14 +52,13 @@ describe('router', function(){
     var calls = 0;
 
     route('/', 'index')
-      .on('request', function(context, next){
+      .on('request', function(context){
         var res = context.res;
 
         // simulate async
         process.nextTick(function(){
           res.json({ hello: 'world' });
           calls++;
-          next();
         });
       });
 
@@ -67,17 +75,32 @@ describe('router', function(){
   // http://faye.jcoglan.com/browser.html
   // https://github.com/sockjs/sockjs-node/blob/master/examples/echo/server.js
   // https://github.com/sockjs/sockjs-client-node
+  // http://en.wikipedia.org/wiki/WebSocket#WebSocket_protocol_handshake
+  // http://einaros.github.io/ws/
+  // http://www.laktek.com/2010/05/04/implementing-web-socket-servers-with-node-js/
+  // https://github.com/sockjs/sockjs-node/issues/43
+  // https://github.com/nodejitsu/node-http-proxy#proxying-websockets
+  // https://github.com/sockjs/sockjs-node/issues/67
   it('should get socket connection', function(done){
+    route('/', 'index')
+      .on('connect', function(context){
+        
+      })
+      .on('disconnect', function(context){
+
+      })
+
     var sock = SockJS.create('http://localhost:4000/echo');
     var calls = [];
 
     sock.on('connection', function(){
+      // this gets called after the server .on('connection') gets called.
       calls.push('connection');
     });
 
     sock.on('data', function(data){
       calls.push('data');
-      assert('Hello World' === data);
+      assert('route == index' === data);
       sock.close();
     });
 
@@ -91,6 +114,6 @@ describe('router', function(){
       done();
     });
 
-    sock.write('Hello World');
+    sock.write(':route: index');
   })
 });
