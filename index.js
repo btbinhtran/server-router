@@ -31,7 +31,9 @@ function router(req, res, fn) {
       path: req.path
     , req: req
     , res: res
-  }), fn);
+  }), function(err){
+    if (err) fn(err);
+  });
 }
 
 /**
