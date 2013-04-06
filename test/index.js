@@ -48,13 +48,10 @@ describe('router', function(){
 
         // simulate async
         process.nextTick(function(){
-          context.data = { hello: 'world' };
+          res.json({ hello: 'world' });
           calls++;
           next();
         });
-      })
-      .render('*', function(context){
-        context.res.json(context.data);
       });
 
     agent
