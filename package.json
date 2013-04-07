@@ -7,7 +7,7 @@
     "tower-container": "*",
     "tower-route": "*",
     "tower-context": "*",
-    "tower-routing": "*"
+    "part-async-series": "*"
   },
   "devDependencies": {
     "superagent": "*",

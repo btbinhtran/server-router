@@ -5,7 +5,7 @@
 
 var route = require('tower-route')
   , Context = require('tower-context')
-  , routing = require('tower-routing')
+  , series = require('part-async-series');
 
 /**
  * Expose `router`.
@@ -20,16 +20,50 @@ var exports = module.exports = router;
 exports.route = route;
 
 /**
+ * Expose `callbacks`.
+ */
+
+var callbacks = exports.callbacks = [];
+
+/**
  * Routing middleware.
  */
 
 function router(req, res, fn) {
-  routing.dispatch(new Context({
+  exports.dispatch(new Context({
       path: req.path
     , req: req
     , res: res
     , event: 'request'
   }), fn);
+}
+
+/**
+ * Dispatch the given `context`.
+ *
+ * @param {Object} context
+ * @api private
+ */
+
+exports.dispatch = function(context, fn){
+  if ('string' === typeof context)
+    context = new Context({ path: context });
+
+  series(callbacks, context, function(err){
+    if (err && fn) fn(err);
+  });
+
+  return exports;
+}
+
+/**
+ * Clear routes and callbacks.
+ */
+
+exports.clear = function(){
+  callbacks.length = 0;
+  route.routes.length = 0;
+  return exports;
 }
 
 /**
@@ -47,12 +81,6 @@ exports.start = function(port, fn){
 exports.stop = function(fn){
 
 }
-
-/**
- * Clear all routes.
- */
-
-exports.clear = routing.clear;
 
 /**
  * Render a specific format.
@@ -118,6 +146,10 @@ Context.prototype.send = function(code, message){
   }
 }
 
+Context.prototype.init = function(){
+
+}
+
 // redirect
 // cookie
 // clearCookie
@@ -131,4 +163,14 @@ Context.prototype.send = function(code, message){
 // maybe do this?
 Context.prototype.__defineGetter__('ip', function(){
   return this.req.ip;
+});
+
+/**
+ * When a route is created, add it to the router.
+ */
+
+route.on('define', function(_route){
+  callbacks.push(function(context, next){
+    return _route.handle(context, next);
+  });
 });
