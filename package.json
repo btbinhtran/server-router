@@ -6,7 +6,8 @@
   "dependencies": {
     "tower-container": "*",
     "tower-route": "*",
-    "tower-context": "*"
+    "tower-context": "*",
+    "tower-routing": "*"
   },
   "devDependencies": {
     "superagent": "*",

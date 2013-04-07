@@ -5,30 +5,26 @@
 
 var route = require('tower-route')
   , Context = require('tower-context')
-  , series = require('./async-series');
+  , routing = require('tower-routing')
 
-// https://github.com/MatthewMueller/aemitter
-// https://github.com/visionmedia/batch
-route.on('define', function(i){
-  callbacks.push(function(context, next){
-    i.handle(context, next);
-  });
-});
+/**
+ * Expose `router`.
+ */
 
-var callbacks = [];
+var exports = module.exports = router;
 
-module.exports = router;
-module.exports.route = route;
-module.exports.callbacks = callbacks;
-module.exports.clear = function(){
-  callbacks.length = 0;
-  route.routes.length = 0;
-  return router;
-}
+/**
+ * Expose `route`.
+ */
 
-// XXX: this isn't the api, just hacking
+exports.route = route;
+
+/**
+ * Routing middleware.
+ */
+
 function router(req, res, fn) {
-  router.dispatch(new Context({
+  routing.dispatch(new Context({
       path: req.path
     , req: req
     , res: res
@@ -36,17 +32,11 @@ function router(req, res, fn) {
   }), fn);
 }
 
-router.dispatch = function(context, fn) {
-  series(callbacks, context, function(err){
-    if (err) fn(err);
-  });
-}
-
 /**
  * Listen to port.
  */
 
-router.start = function(port, fn){
+exports.start = function(port, fn){
 
 }
 
@@ -54,16 +44,20 @@ router.start = function(port, fn){
  * Stop listening to port.
  */
 
-router.stop = function(fn){
+exports.stop = function(fn){
 
 }
 
-Context.prototype.init = function(options){
-  this.req = options.req;
-  this.res = options.res;
-}
+/**
+ * Clear all routes.
+ */
 
-// http://stackoverflow.com/questions/1975416/trying-to-understand-the-vary-http-header
+exports.clear = routing.clear;
+
+/**
+ * Render a specific format.
+ */
+
 Context.prototype.render = function(){
   var req = this.req
     , res = this.res
@@ -71,6 +65,7 @@ Context.prototype.render = function(){
     , formats = this.route.formats
     , format = req.accepts(this.route.accepts);
 
+  // http://stackoverflow.com/questions/1975416/trying-to-understand-the-vary-http-header
   res.set('Vary', 'Accept');
 
   if (format) {
@@ -87,6 +82,12 @@ Context.prototype.render = function(){
 
   return this;
 }
+
+/**
+ * Write to a connection or response.
+ *
+ * @param {String} string
+ */
 
 Context.prototype.write = function(string){
   if (this.tcp) {
