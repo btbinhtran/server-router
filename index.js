@@ -4,7 +4,6 @@
  */
 
 var route = require('tower-route')
-  , Context = require('tower-context')
   , series = require('part-async-series');
 
 /**
@@ -18,6 +17,12 @@ var exports = module.exports = router;
  */
 
 exports.route = route;
+
+/**
+ * Expose `Context`.
+ */
+
+exports.Context = Context;
 
 /**
  * Expose `callbacks`.
@@ -83,6 +88,28 @@ exports.stop = function(fn){
 }
 
 /**
+ * Instantiate a new `Context`.
+ *
+ * XXX: Maybe this becomes `tower-server-context`.
+ */
+
+function Context(options) {
+  options || (options = {});
+
+  for (var key in options) this[key] = options[key];
+
+  var path = options.path;
+  var i = path.indexOf('?');
+  this.canonicalPath = path;
+  this.path = path || '/';
+  this.state = {};
+  this.state.path = path;
+  this.querystring = ~i ? path.slice(i + 1) : '';
+  this.pathname = ~i ? path.slice(0, i) : path;
+  this.params = [];
+}
+
+/**
  * Render a specific format.
  */
 
@@ -144,10 +171,6 @@ Context.prototype.send = function(code, message){
   } else {
     this.res.send.apply(this.res, arguments);
   }
-}
-
-Context.prototype.init = function(){
-
 }
 
 // redirect

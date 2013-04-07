@@ -1,6 +1,6 @@
 var router = require('..')
-  , route = require('tower-route')
-  , Context = require('tower-context')
+  , route = router.route
+  , Context = router.Context
   , container = require('tower-container')
   , request = require('superagent')
   , agent = request.agent()
