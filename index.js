@@ -28,7 +28,7 @@ exports.Context = Context;
  * Expose `callbacks`.
  */
 
-var callbacks = exports.callbacks = [];
+exports.callbacks = [];
 
 /**
  * Routing middleware.
@@ -54,7 +54,7 @@ exports.dispatch = function(context, fn){
   if ('string' === typeof context)
     context = new Context({ path: context });
 
-  series(callbacks, context, function(err){
+  series(exports.callbacks, context, function(err){
     if (err && fn) fn(err);
   });
 
@@ -66,7 +66,7 @@ exports.dispatch = function(context, fn){
  */
 
 exports.clear = function(){
-  callbacks.length = 0;
+  exports.callbacks.length = 0;
   route.routes.length = 0;
   return exports;
 }
@@ -193,7 +193,7 @@ Context.prototype.__defineGetter__('ip', function(){
  */
 
 route.on('define', function(_route){
-  callbacks.push(function(context, next){
+  exports.callbacks.push(function(context, next){
     return _route.handle(context, next);
   });
 });

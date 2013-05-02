@@ -2,11 +2,11 @@
 
 ## Installation
 
-```
-npm install tower-router
+```bash
+$ npm install tower-router
 ```
 
-## Quick Start
+## Example
 
 ``` javascript
 var router = require('tower-router');
