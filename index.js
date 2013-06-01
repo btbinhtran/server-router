@@ -3,8 +3,8 @@
  * Module dependencies.
  */
 
-var route = require('tower-route')
-  , series = require('part-async-series');
+var route = require('tower-route');
+var series = require('part-async-series');
 
 /**
  * Expose `router`.
@@ -36,10 +36,10 @@ exports.callbacks = [];
 
 function router(req, res, fn) {
   exports.dispatch(new Context({
-      path: req.path
-    , req: req
-    , res: res
-    , event: 'request'
+    path: req.path
+    req: req,
+    res: res,
+    event: 'request',
   }), fn);
 }
 
@@ -114,11 +114,11 @@ function Context(options) {
  */
 
 Context.prototype.render = function(){
-  var req = this.req
-    , res = this.res
-    , next = req.next
-    , formats = this.route.formats
-    , format = req.accepts(this.route.accepts);
+  var req = this.req;
+  var res = this.res;
+  var next = req.next;
+  var formats = this.route.formats;
+  var format = req.accepts(this.route.accepts);
 
   // http://stackoverflow.com/questions/1975416/trying-to-understand-the-vary-http-header
   res.set('Vary', 'Accept');
@@ -163,7 +163,7 @@ Context.prototype.error = function(code, message){
   // XXX: maybe there is a default handler?
   this.res.send(code, message);
   this.emit(code, message);
-}
+};
 
 Context.prototype.send = function(code, message){
   if (this.tcp) {
@@ -171,7 +171,7 @@ Context.prototype.send = function(code, message){
   } else {
     this.res.send.apply(this.res, arguments);
   }
-}
+};
 
 // redirect
 // cookie

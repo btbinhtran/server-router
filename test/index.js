@@ -1,17 +1,18 @@
-var router = require('..')
-  , route = router.route
-  , Context = router.Context
-  , request = require('superagent')
-  , agent = request.agent()
-  , http = require('http')
-  , net = require('net')
-  , eio = require('engine.io-client')
-  , assert = require('assert');
 
-var express = require('express')
-  , app = express()
-  , server = require('http').createServer(app)
-  , io = require('engine.io').attach(server);
+var router = require('..');
+var route = router.route;
+var Context = router.Context;
+var request = require('superagent');
+var agent = request.agent();
+var http = require('http');
+var net = require('net');
+var eio = require('engine.io-client');
+var assert = require('assert');
+
+var express = require('express');
+var app = express();
+var server = require('http').createServer(app);
+var io = require('engine.io').attach(server);
 
 app.use(express.cookieParser());
 app.use(express.session({ secret: 'secret' }));
@@ -116,7 +117,7 @@ describe('router', function(){
     var calls = 0;
 
     route('/', 'index')
-      .on('request', function(context){
+      .action(function(context){
         // simulate async
         process.nextTick(function(){
           context.render();
@@ -139,7 +140,7 @@ describe('router', function(){
 
   it('should render different formats', function(done){
     route('/')
-      .on('request', function(context){
+      .action(function(context){
         context.render();
       })
       .format('json', function(context){
@@ -153,7 +154,7 @@ describe('router', function(){
       })
       .format('pdf', function(context){
         // application/pdf
-      })
+      });
       // application/vnd.ms-excel
       // http://stackoverflow.com/questions/393647/response-content-type-as-csv
       // http://stackoverflow.com/questions/312230/proper-mime-media-type-for-pdf-files
@@ -190,7 +191,7 @@ describe('router', function(){
 
   it('should handle errors', function(done){
     route('/')
-      .on('request', function(context){
+      .action(function(context){
         throw new Error('An Error!');
       })
       .on(500, function(context){
@@ -209,7 +210,7 @@ describe('router', function(){
 
   //it('should render view', function(done){
   //  route('/')
-  //    .on('request', function(context){
+  //    .action(function(context){
   //      context.res.render('hello-world.handlebars');
   //    });
   //
@@ -288,7 +289,7 @@ describe('router', function(){
       .on('connect', function(context){
         calls.push('users.connect');
       })
-      .on('request', function(context){
+      .action(function(context){
         calls.push('users.request.' + context.method);
         // context.pipe(graph.where()...)
       })
