@@ -39,7 +39,7 @@ function router(req, res, fn) {
     path: req.path
     req: req,
     res: res,
-    event: 'request',
+    event: 'request'
   }), fn);
 }
 
