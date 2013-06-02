@@ -1,9 +1,9 @@
 {
   "name": "tower-router",
-  "version": "0.5.0pre",
+  "version": "0.1.0pre",
   "main": "./index.js",
   "dependencies": {
-    "tower-route": "~0.5.0pre",
+    "tower-route": "~0.1.0pre",
     "part-async-series": "*"
   },
   "devDependencies": {
