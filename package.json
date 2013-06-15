@@ -1,6 +1,6 @@
 {
   "name": "tower-router",
-  "version": "0.1.0pre2",
+  "version": "0.1.0pre4",
   "main": "./index.js",
   "dependencies": {
     "tower-route": "~0.1.0pre",

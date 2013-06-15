@@ -36,12 +36,12 @@ exports.callbacks = [];
 
 function router(req, res, fn) {
   exports.dispatch(new Context({
-    path: req.path
+    path: req.path,
     req: req,
     res: res,
     event: 'request'
   }), fn);
-}
+};
 
 /**
  * Dispatch the given `context`.
@@ -59,7 +59,7 @@ exports.dispatch = function(context, fn){
   });
 
   return exports;
-}
+};
 
 /**
  * Clear routes and callbacks.
@@ -69,7 +69,7 @@ exports.clear = function(){
   exports.callbacks.length = 0;
   route.routes.length = 0;
   return exports;
-}
+};
 
 /**
  * Listen to port.
@@ -77,7 +77,7 @@ exports.clear = function(){
 
 exports.start = function(port, fn){
 
-}
+};
 
 /**
  * Stop listening to port.
@@ -85,7 +85,7 @@ exports.start = function(port, fn){
 
 exports.stop = function(fn){
 
-}
+};
 
 /**
  * Instantiate a new `Context`.
@@ -136,7 +136,7 @@ Context.prototype.render = function(){
   }
 
   return this;
-}
+};
 
 /**
  * Write to a connection or response.
@@ -150,7 +150,7 @@ Context.prototype.write = function(string){
   } else {
     this.res.write(string);
   }
-}
+};
 
 /**
  * Example
