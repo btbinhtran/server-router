@@ -32,6 +32,13 @@ exports.callbacks = [];
 
 /**
  * Routing middleware.
+ *
+ * @chainable
+ * @param {Request} req A request object.
+ * @param {Response} res A response object.
+ * @param {Function} fn The function called on dispatch.
+ * @return {Function} exports The main `router` function.
+ * @api public
  */
 
 function router(req, res, fn) {
@@ -46,7 +53,10 @@ function router(req, res, fn) {
 /**
  * Dispatch the given `context`.
  *
- * @param {Object} context
+ * @chainable
+ * @param {Object} context A context object.
+ * @param {Function} fn Function called after route handlers are dispatched.
+ * @return {Function} exports The main `router` function.
  * @api private
  */
 
@@ -63,6 +73,9 @@ exports.dispatch = function(context, fn){
 
 /**
  * Clear routes and callbacks.
+ *
+ * @return {Function} exports The main `router` function.
+ * @api public
  */
 
 exports.clear = function(){
@@ -73,6 +86,10 @@ exports.clear = function(){
 
 /**
  * Listen to port.
+ * 
+ * @param {Integer} port A port number.
+ * @param {Function} fn Function called on start.
+ * @api public
  */
 
 exports.start = function(port, fn){
@@ -81,6 +98,9 @@ exports.start = function(port, fn){
 
 /**
  * Stop listening to port.
+ *
+ * @param {Function} fn Function called on stop.
+ * @api public
  */
 
 exports.stop = function(fn){
@@ -88,9 +108,13 @@ exports.stop = function(fn){
 };
 
 /**
- * Instantiate a new `Context`.
- *
+ * Class representing a server context.
  * XXX: Maybe this becomes `tower-server-context`.
+ *
+ * @class
+ *
+ * @param {Object} options Context options.
+ * @api public
  */
 
 function Context(options) {
@@ -111,6 +135,10 @@ function Context(options) {
 
 /**
  * Render a specific format.
+ *
+ * @chainable
+ * @return {Context}
+ * @api public
  */
 
 Context.prototype.render = function(){
@@ -141,7 +169,8 @@ Context.prototype.render = function(){
 /**
  * Write to a connection or response.
  *
- * @param {String} string
+ * @param {String} string The string to write.
+ * @api public
  */
 
 Context.prototype.write = function(string){
@@ -153,10 +182,16 @@ Context.prototype.write = function(string){
 };
 
 /**
+ * Indicate server context response error.
+ *
  * Example
  *
  *    context.error(404);
  *    context.emit(404);
+ *
+ * @param {Integer} code Response code.
+ * @param {String} message Response message.
+ * @api public
  */
 
 Context.prototype.error = function(code, message){
@@ -164,6 +199,14 @@ Context.prototype.error = function(code, message){
   this.res.send(code, message);
   this.emit(code, message);
 };
+
+/**
+ * Send a server context response.
+ *
+ * @param {Integer} code Response code.
+ * @param {String} message Response message.
+ * @api public
+ */
 
 Context.prototype.send = function(code, message){
   if (this.tcp) {
